@@ -26,7 +26,6 @@
  * the provisions above, a recipient may use your version of this file under
  * the terms of any one of the MPL, the GPL or the LGPL.
  */
-
 package nextapp.echo.app.list;
 
 import java.io.Serializable;
@@ -35,14 +34,15 @@ import nextapp.echo.app.event.ListDataListener;
 
 /**
  * A data model for list type components (SelectFields and ListBoxes).
+ *
+ * @param T the type of objects
  */
-public interface ListModel
-extends Serializable {
+public interface ListModel<T>
+        extends Serializable {
 
     /**
      * Adds a <code>ListDataListener</code> to the model.
-     * <code>ListDataListener</code>s are notified whenever the model 
-     * changes.
+     * <code>ListDataListener</code>s are notified whenever the model changes.
      *
      * @param l the <code>ListDataListener</code> to add
      */
@@ -50,19 +50,19 @@ extends Serializable {
 
     /**
      * Returns the value at the specified index in the list.
-     * 
+     *
      * @param index the index
      * @return the value
      */
-    public Object get(int index);
+    public T get(int index);
 
     /**
      * Returns the size of the list.
-     * 
+     *
      * @return the size
      */
     public int size();
-    
+
     /**
      * Removes a <code>ListDataListener</code> from the model.
      * <code>ListDataListener</code> are notified whenever the model changes.
