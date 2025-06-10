@@ -6,7 +6,7 @@ Although Model-View-Controller (MVC) design principles and the Java Swing API ar
 
 In contrast to this development paradigm, Echo offers a very efficient and sophisticated way to design and implement complex real world applications in pure Java, enabling one to fully leverage modern software engineering principles such as inheritance, component-oriented design, and refactoring, all without making a stop in the web tier. In addition, should the use of Java not be desired, most of the Echo API is available to JavaScript running entirely within the web browser.
 
-#Features
+# Features
 Server-Side Java API
 Echo provides a Java-based API for application development which requires absolutely no interaction with web tier technologies such as HTML, CSS, or JavaScript. To provide this capability, the Echo server-side framework makes use of a derivative of its own client-side framework (see below) to render the state of the server-side application remotely. Should additional rendering capabilities beyond those provided by the API be desired, advanced users can easily implement custom components in JavaScript that extend the framework.
 
@@ -34,6 +34,6 @@ Reduced Bandwidth: Echo version 3 uses approximately 30-40% of the bandwidth of 
 Reduced Server Load: Due to the fact that the server is not rendering HTML for transmission to the client, it has quite a bit less work to do. The reduced bandwidth usage mentioned previously also means less CPU and memory utilization.
 Keyboard Navigation / Focus Management: Focus among components is now fully tracked. Echo version 3 does away with the practice of using sequential tab index numbers to control focus order, instead presenting next/previous element focus events to components for a more intuitive user interface. Components that have multiple "focus points" particularly benefit from this feature.
 
-#This version
+# This version
 Thsi version has been forked from https://github.com/echo3/echo3. I maintain it for my personnal and professionnal projects.
 
