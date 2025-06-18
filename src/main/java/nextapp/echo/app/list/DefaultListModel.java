@@ -34,13 +34,14 @@ import java.util.List;
 
 /**
  * Default <code>ListModel</code> implementation.
+ * @param <T> the type of objects
  */
-public class DefaultListModel extends AbstractListModel {
+public class DefaultListModel<T> extends AbstractListModel<T> {
 
     /** Serial Version UID. */
     private static final long serialVersionUID = 20070101L;
 
-    private List items = new ArrayList();
+    private List<T> items = new ArrayList<>();
     
     /**
      * Creates a new <code>DefaultSelectListModel</code> with the given 
@@ -56,7 +57,7 @@ public class DefaultListModel extends AbstractListModel {
      *
      * @param itemArray the initial items
      */
-    public DefaultListModel(Object[] itemArray) {
+    public DefaultListModel(T[] itemArray) {
         this();
         
         for (int i = 0; i < itemArray.length; ++i) {
@@ -69,7 +70,7 @@ public class DefaultListModel extends AbstractListModel {
      *
      * @param item the item to add
      */
-    public void add(Object item) {
+    public void add(T item) {
         items.add(item); 
         int index = items.size() - 1;
         fireIntervalAdded(index, index); 
@@ -81,7 +82,7 @@ public class DefaultListModel extends AbstractListModel {
      * @param item the item
      * @param index the index
      */
-    public void add(int index, Object item) {
+    public void add(int index, T item) {
         items.add(index, item);
         fireIntervalAdded(index, index); 
     }
@@ -104,7 +105,7 @@ public class DefaultListModel extends AbstractListModel {
      * @param index 
      * @return the item
      */
-    public Object get(int index) {
+    public T get(int index) {
         return items.get(index);
     }
     

@@ -35,7 +35,7 @@ import nextapp.echo.app.event.ListDataListener;
 /**
  * A data model for list type components (SelectFields and ListBoxes).
  *
- * @param T the type of objects
+ * @param <T> the type of objects
  */
 public interface ListModel<T>
         extends Serializable {

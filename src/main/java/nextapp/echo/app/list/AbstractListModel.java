@@ -39,9 +39,10 @@ import nextapp.echo.app.event.ListDataListener;
 /**
  * A base class from which <code>ListModel</code> implementations may be 
  * derived.  This class provides event listener management facilities.
+ * @param <T> the type of objects
  */
-public abstract class AbstractListModel 
-implements ListModel, Serializable {
+public abstract class AbstractListModel <T>
+implements ListModel<T>, Serializable {
 
     /**
      * A storage facility for <code>EventListener</code>s.
