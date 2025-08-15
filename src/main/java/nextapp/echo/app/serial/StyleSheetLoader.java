@@ -280,6 +280,9 @@ public class StyleSheetLoader {
             if (a instanceof Attr attr) {
                 String v = attr.getValue();
                 String nv = calc(nodeType, v, styleConstants);
+                if (nv != null) {
+                    attr.setValue(nv);
+                }
             } else {
                 throw new SerialException("not an attribute : " + a, null);
             }
@@ -348,15 +351,20 @@ public class StyleSheetLoader {
      */
     private static String calc(String v, Constants styleConstants) throws SerialException {
         String nv = v.substring(1);
+        Constant nc = styleConstants.getConstants().get(nv);
+        if (nc != null && nc.getNumericValue() == null) {//la constante n'est pas numérique, pas la peine d'aller plus loin
+            return nc.getValue();
+        }
         try {
             String unit = null;
             Matcher mat = BasicMath.variablePattern.matcher(nv);
-            if (mat.matches()) {
+            while (mat.find()) {
                 Constant c = styleConstants.getConstants().get(mat.group(0));
                 if (c != null) {
-                    unit = c.getUnit();
-                    if (c.getNumericValue() == null) {
-                        return c.getValue();
+                    String u = c.getUnit();
+                    if (u != null && !u.isBlank()) {
+                        unit = u;
+                        break;
                     }
                 }
             }
@@ -534,7 +542,7 @@ public class StyleSheetLoader {
             Map<String, Double> numericConstantsWithUnresolved = new HashMap<>(numericConstants);
             boolean modified = true;
             while (modified) {//premières passes : constantes texte et valeurs simple, remplissage de la table des non résolues
-                modified=false;
+                modified = false;
                 for (Map.Entry<String, Constant> x : constants.entrySet()) {//premières passes : constantes texte et valeurs simple, remplissage de la table des non résolues
                     Constant c = x.getValue();
                     String v = c.getValue();
@@ -543,7 +551,7 @@ public class StyleSheetLoader {
                         if (r != null) {
                             c.numericValue = r.numericValue;
                             c.unit = r.unit;
-                            c.value = r.value;
+                            c.setValue(r.getValue());
                             if (c.numericValue != null) {
                                 numericConstants.put(x.getKey(), c.numericValue);
                                 numericConstantsWithUnresolved.put(x.getKey(), c.numericValue);
