@@ -38,7 +38,6 @@ public class BasicMath {
      * @throws Exception en cas d'erreur
      */
     public static double evaluate(String formula, Map<String, Double> variables) throws Exception {
-
         StringBuilder sb = new StringBuilder();
         Matcher mat = variablePattern.matcher(formula);
         while (mat.find()) {

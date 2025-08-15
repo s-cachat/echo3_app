@@ -247,7 +247,7 @@ public class StyleSheetLoader {
 
                 classToStyleMap = (Map) namedStyleMap.get(baseName);
                 if (classToStyleMap == null) {
-                    throw new SerialException("Invalid base style name for style name " + name + ".", null);
+                    throw new SerialException("Invalid base style name for style name " + name + "(type " + type + ").", null);
                 }
                 Style baseStyle = (Style) classToStyleMap.get(componentClass);
                 while (baseStyle == null && componentClass != Object.class) {
@@ -532,24 +532,33 @@ public class StyleSheetLoader {
          */
         public void resolve() throws SerialException {
             Map<String, Double> numericConstantsWithUnresolved = new HashMap<>(numericConstants);
-            for (Map.Entry<String, Constant> x : constants.entrySet()) {//premières passe : constantes texte et valeurs simple, remplissage de la table des non résolues
-                Constant c = x.getValue();
-                String v = c.getValue();
-                if (v.startsWith("@")) {
-                    Constant r = constants.get(v.substring(1));
-                    if (r != null) {
-                        c.numericValue = r.numericValue;
-                        c.unit = r.unit;
-                        c.value = r.value;
-                        if (c.numericValue != null) {
-                            numericConstants.put(x.getKey(), c.numericValue);
+            boolean modified = true;
+            while (modified) {//premières passes : constantes texte et valeurs simple, remplissage de la table des non résolues
+                modified=false;
+                for (Map.Entry<String, Constant> x : constants.entrySet()) {//premières passes : constantes texte et valeurs simple, remplissage de la table des non résolues
+                    Constant c = x.getValue();
+                    String v = c.getValue();
+                    if (v.startsWith("@")) {
+                        Constant r = constants.get(v.substring(1));
+                        if (r != null) {
+                            c.numericValue = r.numericValue;
+                            c.unit = r.unit;
+                            c.value = r.value;
+                            if (c.numericValue != null) {
+                                numericConstants.put(x.getKey(), c.numericValue);
+                                numericConstantsWithUnresolved.put(x.getKey(), c.numericValue);
+                            } else {
+                                numericConstantsWithUnresolved.remove(x.getKey());
+                            }
+                            modified = true;
+                        } else {
+                            numericConstantsWithUnresolved.put(x.getKey(), Double.NaN);
                         }
-                    } else {
-                        numericConstantsWithUnresolved.put(x.getKey(), Double.NaN);
                     }
                 }
             }
-            boolean modified = true;
+
+            modified = true;
             while (modified) {//passes suivantes : résolution globale des valeurs numériques
                 modified = false;
                 for (Map.Entry<String, Constant> x : constants.entrySet()) {
@@ -580,7 +589,8 @@ public class StyleSheetLoader {
                     }
                 }
             }
-            for (Map.Entry<String, Constant> x : constants.entrySet()) {
+            for (Map.Entry<String, Constant> x
+                    : constants.entrySet()) {
                 Constant c = x.getValue();
                 if (c.getNumericValue() == null) {
                     String v = c.getValue();
@@ -597,7 +607,7 @@ public class StyleSheetLoader {
                                         sb.append(unit);
                                     }
                                 } catch (Exception ex) {
-                                    throw new SerialException("Error in formula : " + vi+" (origin : "+v+")", ex);
+                                    throw new SerialException("Error in formula : " + vi + " (origin : " + v + ")", ex);
                                 }
                             } else {
                                 sb.append(sb.length() == 0 ? "" : " ").append(vi);
