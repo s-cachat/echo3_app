@@ -1,6 +1,7 @@
 /* 
  * This file is part of the Echo Web Application Framework (hereinafter "Echo").
  * Copyright (C) 2002-2009 NextApp, Inc.
+ * Copyright (C) 2010-2025 Stéphane Cachat
  *
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -35,8 +36,9 @@ import org.w3c.dom.Element;
 
 /**
  * Peer to serialize and deserialize property objects between Java and XML.
+ * @param <T> the property type
  */
-public interface SerialPropertyPeer {
+public interface SerialPropertyPeer<T> {
 
     /**
      * Translates an XML representation of a property to a property value object.
@@ -47,8 +49,7 @@ public interface SerialPropertyPeer {
      * @return the property value
      * @throws SerialException when the property cannot be de-serialized.
      */
-    public Object toProperty(Context context, Class objectClass, Element propertyElement)
-    throws SerialException;
+    public T toProperty(Context context, Class objectClass, Element propertyElement)    throws SerialException;
     
     /**
      * Translates an object to an XML representation of a property.
@@ -59,6 +60,5 @@ public interface SerialPropertyPeer {
      *        property value should be rendered
      * @param propertyValue the property value
      */
-    public void toXml(Context context, Class objectClass, Element propertyElement, Object propertyValue)
-    throws SerialException;
+    public void toXml(Context context, Class objectClass, Element propertyElement, T propertyValue)    throws SerialException;
 }
