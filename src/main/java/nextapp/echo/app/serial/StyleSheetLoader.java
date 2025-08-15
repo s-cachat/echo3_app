@@ -280,9 +280,6 @@ public class StyleSheetLoader {
             if (a instanceof Attr attr) {
                 String v = attr.getValue();
                 String nv = calc(nodeType, v, styleConstants);
-                if (nv != null) {
-                    System.err.printf("Element %s attribute %s %s=>%s", nodeName, attr.getName(), v, nv);
-                }
             } else {
                 throw new SerialException("not an attribute : " + a, null);
             }
@@ -290,7 +287,6 @@ public class StyleSheetLoader {
         for (int i = 0; i < element.getChildNodes().getLength(); i++) {
             Node a = element.getChildNodes().item(i);
             if (a instanceof Element child) {
-                System.err.printf("Element %s child %s", nodeName, child.getNodeName());
                 replaceConstant(child, styleConstants);
             } else if (a instanceof Text) {
             } else if (a instanceof Comment) {
@@ -301,7 +297,6 @@ public class StyleSheetLoader {
         String v = DomUtil.getElementText(element);
         String nv = calc(nodeType, v, styleConstants);
         if (nv != null) {
-            System.err.printf("Element %s text %s=>%s", nodeName, v, nv);
             DomUtil.setElementText(element, nv);
         }
     }
@@ -366,7 +361,6 @@ public class StyleSheetLoader {
                 }
             }
             nv = formatNumeric(BasicMath.evaluate(nv, styleConstants.getNumericConstants()), unit);
-            System.err.printf("replace \"%s\" by \"%s\"\r\n", v, nv);
         } catch (Exception ex) {
             throw new SerialException("can't evaluate : " + nv, null);
         }
@@ -530,16 +524,13 @@ public class StyleSheetLoader {
             constants.put(name, c);
             if (c.getNumericValue() != null) {
                 numericConstants.put(name, c.getNumericValue());
-                System.err.printf("Constant %s = %s => %f %s", name, value, c.getNumericValue(), c.getUnit());
-            } else {
-                System.err.printf("Constant %s = %s", name, value);
             }
         }
 
         /**
          * résoud les constantes calculées à partir d'autres constantes
          */
-        public void resolve() {
+        public void resolve() throws SerialException {
             Map<String, Double> numericConstantsWithUnresolved = new HashMap<>(numericConstants);
             for (Map.Entry<String, Constant> x : constants.entrySet()) {//premières passe : constantes texte et valeurs simple, remplissage de la table des non résolues
                 Constant c = x.getValue();
@@ -547,7 +538,6 @@ public class StyleSheetLoader {
                 if (v.startsWith("@")) {
                     Constant r = constants.get(v.substring(1));
                     if (r != null) {
-                        System.err.printf("resolve %s %s=>%s", x.getKey(), c.getValue(), r.getValue());
                         c.numericValue = r.numericValue;
                         c.unit = r.unit;
                         c.value = r.value;
@@ -581,11 +571,9 @@ public class StyleSheetLoader {
                                     c.setValue(formatNumeric(c.numericValue, c.unit));
                                     numericConstants.put(x.getKey(), n);
                                     numericConstantsWithUnresolved.put(x.getKey(), n);
-                                    System.err.printf("resolve %s %s=>%f %s", x.getKey(), c.getValue(), n, unit);
                                     modified = true;
                                 } catch (Exception ex) {
-                                    System.err.printf("Error in formula %s", v);
-                                    ex.printStackTrace();
+                                    throw new SerialException("Error in formula : " + v, ex);
                                 }
                             }
                         }
@@ -609,15 +597,13 @@ public class StyleSheetLoader {
                                         sb.append(unit);
                                     }
                                 } catch (Exception ex) {
-                                    System.err.printf("Error in formula %s (origin : %s)", vi, v);
-                                    ex.printStackTrace();
+                                    throw new SerialException("Error in formula : " + vi+" (origin : "+v+")", ex);
                                 }
                             } else {
                                 sb.append(sb.length() == 0 ? "" : " ").append(vi);
                             }
                         }
                         String vr = sb.toString();
-                        System.err.printf("resolve %s (%s) %s=>%s", x.getKey(), c.getType(), c.getValue(), v, vr);
                         c.setValue(vr);
                     }
                 }
