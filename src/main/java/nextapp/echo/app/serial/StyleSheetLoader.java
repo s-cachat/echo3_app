@@ -319,12 +319,12 @@ public class StyleSheetLoader {
     private static String calc(String type, String v, Constants styleConstants) throws SerialException {
         if (v == null) {
             return null;
-        } else if ("Insets".equals(type)) {
+        } else if ("Insets".equals(type) || "Border".equals(type)) {
             String[] vl = v.split(" ");
             StringBuilder sb = new StringBuilder();
             for (String vi : vl) {
                 if (vi.startsWith("@")) {
-                    sb.append(sb.length() == 0 ? "" : " ").append(calc(vi, styleConstants));
+                    sb.append(sb.length() == 0 ? "" : " ").append(calc(vi.trim(), styleConstants));
                 } else {
                     sb.append(sb.length() == 0 ? "" : " ").append(vi);
                 }
