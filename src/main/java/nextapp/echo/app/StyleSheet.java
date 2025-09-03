@@ -69,7 +69,7 @@ extends Serializable {
     public Style getStyle(String styleName, Class componentClass, boolean searchSuperClasses);
     
     /**
-     * Retrieve an Extent constant
+     * Retrieve an Extent constant.
      * @param name the constant name
      * @return the value, or null if not defined
      */

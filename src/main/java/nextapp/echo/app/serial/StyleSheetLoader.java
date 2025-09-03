@@ -319,7 +319,7 @@ public class StyleSheetLoader {
     private static String calc(String type, String v, Constants styleConstants) throws SerialException {
         if (v == null) {
             return null;
-        } else if ("Insets".equals(type) || "Border".equals(type)) {
+        } else if ("Insets".equals(type)||"Border".equals(type)) {
             String[] vl = v.split(" ");
             StringBuilder sb = new StringBuilder();
             for (String vi : vl) {
@@ -543,7 +543,7 @@ public class StyleSheetLoader {
             boolean modified = true;
             while (modified) {//premières passes : constantes texte et valeurs simple, remplissage de la table des non résolues
                 modified = false;
-                for (Map.Entry<String, Constant> x : constants.entrySet()) {//premières passes : constantes texte et valeurs simple, remplissage de la table des non résolues
+                for (Map.Entry<String, Constant> x : constants.entrySet()) {
                     Constant c = x.getValue();
                     String v = c.getValue();
                     if (v.startsWith("@")) {

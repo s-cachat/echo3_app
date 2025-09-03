@@ -63,6 +63,7 @@ extends StreamImageReference {
         map.put("jpeg", "image/jpeg");
         map.put("jpg",  "image/jpg");
         map.put("bmp",  "image/bmp");
+        map.put("svg",  "image/svg+xml");
         extensionToContentType = Collections.unmodifiableMap(map);
     }
     
@@ -74,7 +75,7 @@ extends StreamImageReference {
      * @return the discovered content type
      * @throws IllegalArgumentException if no content type can be determined
      */
-    private static final String getContentType(String resourceName) {
+    private static String getContentType(String resourceName) {
         String contentType;
     
         // Determine content type.
@@ -166,6 +167,7 @@ extends StreamImageReference {
     /**
      * @see java.lang.Object#equals(java.lang.Object)
      */
+    @Override
     public boolean equals(Object o) {
         if (!(o instanceof ResourceImageReference)) {
             return false;
@@ -189,6 +191,7 @@ extends StreamImageReference {
     /**
      * @see nextapp.echo.app.StreamImageReference#getContentType()
      */
+    @Override
     public String getContentType() {
         return contentType;
     }
@@ -196,6 +199,7 @@ extends StreamImageReference {
     /**
      * @see nextapp.echo.app.ImageReference#getHeight()
      */
+    @Override
     public Extent getHeight() {
         return height;
     }
@@ -203,6 +207,7 @@ extends StreamImageReference {
     /**
      * @see nextapp.echo.app.RenderIdSupport#getRenderId()
      */
+    @Override
     public String getRenderId() {
         return id;
     }
@@ -219,6 +224,7 @@ extends StreamImageReference {
     /**
      * @see nextapp.echo.app.ImageReference#getWidth()
      */
+    @Override
     public Extent getWidth() {
         return width;
     }
@@ -226,6 +232,7 @@ extends StreamImageReference {
     /**
      * @see java.lang.Object#hashCode()
      */
+    @Override
     public int hashCode() {
         return resource == null ? 0 : resource.hashCode();
     }
@@ -233,6 +240,7 @@ extends StreamImageReference {
     /**
      * @see nextapp.echo.app.StreamImageReference#render(java.io.OutputStream)
      */
+    @Override
     public void render(OutputStream out) 
     throws IOException {
         InputStream in = null;
