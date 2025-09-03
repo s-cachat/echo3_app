@@ -129,9 +129,7 @@ public class StyleSheetLoader {
         // First pass, load constants
         for (int i = 0; i < constantElements.length; ++i) {
             final Element element = constantElements[i];
-
             styleConstants.put(element);
-
         }
         styleConstants.resolve();
         for (Map.Entry<String, Constant> c : styleConstants.getConstants().entrySet()) {
@@ -319,7 +317,7 @@ public class StyleSheetLoader {
     private static String calc(String type, String v, Constants styleConstants) throws SerialException {
         if (v == null) {
             return null;
-        } else if ("Insets".equals(type)||"Border".equals(type)) {
+        } else if (isMultiValued(type)) {
             String[] vl = v.split(" ");
             StringBuilder sb = new StringBuilder();
             for (String vi : vl) {
@@ -388,11 +386,16 @@ public class StyleSheetLoader {
      */
     private static String formatNumeric(double number, String unit) {
         String num = String.format(Locale.ENGLISH, "%f", number);
-        int l = num.length() - 1;
-        while (l > 0 && (num.charAt(l) == '0' || num.charAt(l) == '.')) {
-            l--;
+        if (num.contains(".")) {
+            int l = num.length() - 1;
+            while (l > 0 && num.charAt(l) == '0') {
+                l--;
+            }
+            if (num.charAt(l) == '.') {
+                l--;
+            }
+            num = num.substring(0, l + 1);
         }
-        num = num.substring(0, l + 1);
         if (unit == null) {
             return num;
         } else {
@@ -432,17 +435,17 @@ public class StyleSheetLoader {
          * @param element l'élément du dom
          * @param value la valeur brute
          */
-        public Constant(Element element, String value) {
+        public Constant(Element element, String type, String value) {
             this.value = value;
+            this.type = type;
             this.element = element;
-            Matcher mat = CONSTANT_SPLIT.matcher(value);
-            if (mat.matches()) {
-                String a = mat.group(0);
-                String b = mat.group(1);
-                String c = mat.group(2);
-                String d = mat.group(3);
-                numericValue = Double.valueOf(mat.group(1));
-                unit = mat.group(3);
+            String fi;
+            if ((!isMultiValued(type) || !value.contains(" ")) || value.length() <= 1) {
+                Matcher mat = CONSTANT_SPLIT.matcher(value);
+                if (mat.matches()) {
+                    numericValue = Double.valueOf(mat.group(1));
+                    unit = mat.group(3);
+                }
             }
         }
 
@@ -527,8 +530,7 @@ public class StyleSheetLoader {
             if (value == null || value.isBlank()) {
                 throw new SerialException("constant with no value " + name + " = " + value, null);
             }
-            Constant c = new Constant(element, value);
-            c.setType(type);
+            Constant c = new Constant(element, type, value);
             constants.put(name, c);
             if (c.getNumericValue() != null) {
                 numericConstants.put(name, c.getNumericValue());
@@ -546,7 +548,7 @@ public class StyleSheetLoader {
                 for (Map.Entry<String, Constant> x : constants.entrySet()) {
                     Constant c = x.getValue();
                     String v = c.getValue();
-                    if (v.startsWith("@")) {
+                    if (v.startsWith("@") && !(isMultiValued(c.type) && v.contains(" "))) {
                         Constant r = constants.get(v.substring(1));
                         if (r != null) {
                             c.numericValue = r.numericValue;
@@ -573,7 +575,7 @@ public class StyleSheetLoader {
                     Constant c = x.getValue();
                     if (c.getNumericValue() == null) {
                         String v = c.getValue();
-                        if ("Insets".equals(c.type) && v.contains(" ")) {//valeur non numérique (plusieurs nombres)                            
+                        if (isMultiValued(c.type) && v.contains(" ")) {//valeur non numérique (plusieurs nombres)                            
                         } else {
                             if (v.startsWith("@")) {
                                 v = v.substring(1);
@@ -602,7 +604,7 @@ public class StyleSheetLoader {
                 Constant c = x.getValue();
                 if (c.getNumericValue() == null) {
                     String v = c.getValue();
-                    if ("Insets".equals(c.type) && v.contains(" ")) {//valeur non numérique (plusieurs nombres)
+                    if (isMultiValued(c.type) && v.contains(" ")) {//valeur non numérique (plusieurs nombres)
                         String[] vl = v.split(" ");
                         StringBuilder sb = new StringBuilder();
                         for (String vi : vl) {
@@ -641,4 +643,16 @@ public class StyleSheetLoader {
             return unit;
         }
     }
+
+    /**
+     * la propriété est elle constituée de plusieurs valeurs séparées par des
+     * espaces. Exemple insets, border
+     *
+     * @param type le type de la propriété
+     * @return true si multi valeur
+     */
+    private static boolean isMultiValued(String type) {
+        return "Insets".equals(type) || "Border".equals(type);
+    }
+
 }
