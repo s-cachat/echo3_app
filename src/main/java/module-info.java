@@ -13,4 +13,5 @@ module echo3.app{
     exports nextapp.echo.app.serial.property;
     requires java.desktop;
     requires java.xml;
+    requires java.logging;    
 }

@@ -35,6 +35,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
+import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -54,12 +55,15 @@ import org.w3c.dom.Attr;
 import org.w3c.dom.Comment;
 import org.w3c.dom.Node;
 import org.w3c.dom.Text;
+import java.util.logging.Logger;
 
 /**
  * Loads style sheet data from XML format into a <code>StyleSheet</code>
  * instance.
  */
 public class StyleSheetLoader {
+
+    private static Logger logger = Logger.getLogger("StyleSheetLoader");
 
     /**
      * Parses an XML style sheet and returns a <code>StyleSheet</code> instance.
@@ -112,9 +116,8 @@ public class StyleSheetLoader {
         try {
             DocumentBuilder builder = DomUtil.getDocumentBuilder();
             document = builder.parse(in);
-        } catch (IOException ex) {
-            throw new SerialException("Failed to parse InputStream.", ex);
-        } catch (SAXException ex) {
+        } catch (IOException | SAXException ex) {
+            logger.log(Level.SEVERE,"Failed to parse InputStream",ex);
             throw new SerialException("Failed to parse InputStream.", ex);
         }
 
@@ -171,7 +174,7 @@ public class StyleSheetLoader {
         try {
             DomUtil.save(document, new PrintWriter("/tmp/out.stylesheet"), new Properties());
         } catch (IOException | SAXException ex) {
-            ex.printStackTrace();
+            logger.log(Level.SEVERE,"Failed to save modified stylesheet",ex);
         }
         // Third pass, load style information.
         for (int i = 0; i < styleElements.length; ++i) {
@@ -189,6 +192,7 @@ public class StyleSheetLoader {
             try {
                 componentClass = serializer.getClass(type);
             } catch (ClassNotFoundException ex) {
+                logger.log(Level.SEVERE,"Failed to class specified in stylesheet type "+type+" for style "+name,ex);
                 // StyleSheet contains reference to Component which does not exist in this ClassLoader,
                 // and thus should be ignored.
                 continue;
@@ -198,14 +202,17 @@ public class StyleSheetLoader {
 
             SerialContext context = new SerialContext() {
 
+                @Override
                 public ClassLoader getClassLoader() {
                     return classLoader;
                 }
 
+                @Override
                 public int getFlags() {
                     return 0;
                 }
 
+                @Override
                 public Document getDocument() {
                     return document;
                 }
@@ -253,6 +260,7 @@ public class StyleSheetLoader {
                     baseStyle = (Style) classToStyleMap.get(componentClass);
                 }
                 if (baseStyle == null) {
+                    logger.log(Level.SEVERE, "Invalid base style name for style name {0}.", name);
                     throw new SerialException("Invalid base style name for style name " + name + ".", null);
                 }
 
