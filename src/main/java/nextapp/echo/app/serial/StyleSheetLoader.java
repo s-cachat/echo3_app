@@ -117,11 +117,11 @@ public class StyleSheetLoader {
             DocumentBuilder builder = DomUtil.getDocumentBuilder();
             document = builder.parse(in);
         } catch (IOException | SAXException ex) {
-            logger.log(Level.SEVERE,"Failed to parse InputStream",ex);
+            logger.log(Level.SEVERE, "Failed to parse InputStream", ex);
             throw new SerialException("Failed to parse InputStream.", ex);
         }
 
-        Map namedStyleMap = new HashMap();
+        Map<String, Map<Class, DerivedMutableStyle>> namedStyleMap = new HashMap<>();
 
         MutableStyleSheet styleSheet = new MutableStyleSheet();
         Element styleSheetElement = document.getDocumentElement();
@@ -174,7 +174,7 @@ public class StyleSheetLoader {
         try {
             DomUtil.save(document, new PrintWriter("/tmp/out.stylesheet"), new Properties());
         } catch (IOException | SAXException ex) {
-            logger.log(Level.SEVERE,"Failed to save modified stylesheet",ex);
+            logger.log(Level.SEVERE, "Failed to save modified stylesheet", ex);
         }
         // Third pass, load style information.
         for (int i = 0; i < styleElements.length; ++i) {
@@ -192,7 +192,7 @@ public class StyleSheetLoader {
             try {
                 componentClass = serializer.getClass(type);
             } catch (ClassNotFoundException ex) {
-                logger.log(Level.SEVERE,"Failed to class specified in stylesheet type "+type+" for style "+name,ex);
+                logger.log(Level.SEVERE, "Failed to class specified in stylesheet type " + type + " for style " + name, ex);
                 // StyleSheet contains reference to Component which does not exist in this ClassLoader,
                 // and thus should be ignored.
                 continue;
@@ -221,9 +221,9 @@ public class StyleSheetLoader {
             Style propertyStyle = serializer.loadStyle(context, type, element);
             style.addStyleContent(propertyStyle);
 
-            Map classToStyleMap = (Map) namedStyleMap.get(name);
+            Map<Class, DerivedMutableStyle> classToStyleMap = namedStyleMap.get(name);
             if (classToStyleMap == null) {
-                classToStyleMap = new HashMap();
+                classToStyleMap = new HashMap<>();
                 namedStyleMap.put(name, classToStyleMap);
             }
             classToStyleMap.put(componentClass, style);
@@ -240,24 +240,25 @@ public class StyleSheetLoader {
                 try {
                     componentClass = Class.forName(type, true, classLoader);
                 } catch (ClassNotFoundException ex) {
+                    logger.log(Level.SEVERE, "Unknown class " + type + " for style " + name, ex);
                     // StyleSheet contains reference to Component which does not exist in this ClassLoader,
                     // and thus should be ignored.
                     continue;
                 }
 
-                Map classToStyleMap = (Map) namedStyleMap.get(name);
-                DerivedMutableStyle style = (DerivedMutableStyle) classToStyleMap.get(componentClass);
+                Map<Class, DerivedMutableStyle> classToStyleMap = namedStyleMap.get(name);
+                DerivedMutableStyle style = classToStyleMap.get(componentClass);
 
                 String baseName = styleElements[i].getAttribute("b");
 
-                classToStyleMap = (Map) namedStyleMap.get(baseName);
+                classToStyleMap = namedStyleMap.get(baseName);
                 if (classToStyleMap == null) {
                     throw new SerialException("Invalid base style name for style name " + name + "(type " + type + ").", null);
                 }
-                Style baseStyle = (Style) classToStyleMap.get(componentClass);
+                Style baseStyle = classToStyleMap.get(componentClass);
                 while (baseStyle == null && componentClass != Object.class) {
                     componentClass = componentClass.getSuperclass();
-                    baseStyle = (Style) classToStyleMap.get(componentClass);
+                    baseStyle = classToStyleMap.get(componentClass);
                 }
                 if (baseStyle == null) {
                     logger.log(Level.SEVERE, "Invalid base style name for style name {0}.", name);
@@ -279,7 +280,7 @@ public class StyleSheetLoader {
      * @throws SerialException en cas d'erreur
      */
     private static void replaceConstant(Element element, Constants styleConstants) throws SerialException {
-        final String nodeName = element.getNodeName() + "[" + element.getAttribute("n") + "]";
+        //final String nodeName = element.getNodeName() + "[" + element.getAttribute("n") + "]";
         String nodeType = element.getAttribute("t");
         for (int i = 0; i < element.getAttributes().getLength(); i++) {
             Node a = element.getAttributes().item(i);

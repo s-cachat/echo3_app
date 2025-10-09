@@ -43,9 +43,9 @@ public class MutableStyleSheet
      * Serial Version UID.
      */
     private static final long serialVersionUID = 20070101L;
-    private Map<String, Extent> extentConstants = new HashMap<>();
-    private Map namedStyleMap = new HashMap();
-    private Map defaultStyleMap = new HashMap();
+    private final Map<String, Extent> extentConstants = new HashMap<>();
+    private final Map<String, Map<Class, Style>> namedStyleMap = new HashMap<>();
+    private final Map<Class, Style> defaultStyleMap = new HashMap<>();
 
     /**
      * Adds a <code>Style</code> to the <code>StyleSheet</code>.
@@ -59,9 +59,9 @@ public class MutableStyleSheet
         if (styleName == null) {
             defaultStyleMap.put(componentClass, style);
         } else {
-            Map styleMap = (Map) namedStyleMap.get(styleName);
+            Map<Class, Style> styleMap = namedStyleMap.get(styleName);
             if (styleMap == null) {
-                styleMap = new HashMap();
+                styleMap = new HashMap<>();
                 namedStyleMap.put(styleName, styleMap);
             }
             styleMap.put(componentClass, style);
@@ -83,11 +83,12 @@ public class MutableStyleSheet
     /**
      * @see nextapp.echo.app.StyleSheet#getComponentTypes(java.lang.String)
      */
-    public Iterator getComponentTypes(String styleName) {
+    @Override
+    public Iterator<Class> getComponentTypes(String styleName) {
         if (styleName == null) {
             return Collections.unmodifiableSet(defaultStyleMap.keySet()).iterator();
         } else {
-            Map styleMap = (Map) namedStyleMap.get(styleName);
+            Map<Class, Style> styleMap = namedStyleMap.get(styleName);
             return Collections.unmodifiableSet(styleMap.keySet()).iterator();
         }
     }
@@ -100,7 +101,7 @@ public class MutableStyleSheet
         if (styleName == null) {
             // Retrieve generic style.
             while (componentClass != Object.class) {
-                Style style = (Style) defaultStyleMap.get(componentClass);
+                Style style = defaultStyleMap.get(componentClass);
                 if (!searchSuperClasses || style != null) {
                     return style;
                 }
@@ -108,13 +109,13 @@ public class MutableStyleSheet
             }
             return null;
         } else {
-            // Retrieve named style.   
-            Map styleMap = (Map) namedStyleMap.get(styleName);
+            // Retrieve named style.
+            Map<Class, Style> styleMap = namedStyleMap.get(styleName);
             if (styleMap == null) {
                 return null;
             }
             while (componentClass != Object.class) {
-                Style style = (Style) styleMap.get(componentClass);
+                Style style = styleMap.get(componentClass);
                 if (!searchSuperClasses || style != null) {
                     return style;
                 }
@@ -127,15 +128,17 @@ public class MutableStyleSheet
     /**
      * @see nextapp.echo.app.StyleSheet#getStyleNames()
      */
-    public Iterator getStyleNames() {
-        return new Iterator() {
+    @Override
+    public Iterator<String> getStyleNames() {
+        return new Iterator<String>() {
 
-            boolean returnDefault = defaultStyleMap.size() > 0;
-            Iterator namedStyleIterator = namedStyleMap.keySet().iterator();
+            boolean returnDefault = !defaultStyleMap.isEmpty();
+            Iterator<String> namedStyleIterator = namedStyleMap.keySet().iterator();
 
             /**
              * @see java.util.Iterator#hasNext()
              */
+            @Override
             public boolean hasNext() {
                 if (returnDefault) {
                     return true;
@@ -147,7 +150,8 @@ public class MutableStyleSheet
             /**
              * @see java.util.Iterator#next()
              */
-            public Object next() {
+            @Override
+            public String next() {
                 if (returnDefault) {
                     returnDefault = false;
                     return null;
@@ -159,6 +163,7 @@ public class MutableStyleSheet
             /**
              * @see java.util.Iterator#remove()
              */
+            @Override
             public void remove() {
                 throw new UnsupportedOperationException();
             }
@@ -181,6 +186,7 @@ public class MutableStyleSheet
      * @param name the constant name
      * @return the value, or null if not defined
      */
+    @Override
     public Extent getExtentConstant(String name) {
         return extentConstants.get(name);
     }
