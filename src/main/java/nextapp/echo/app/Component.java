@@ -213,6 +213,8 @@ public abstract class Component
 
     public static final String PROPERTY_BACKGROUND = "background";
     public static final String PROPERTY_TRANSITION = "transition";
+    public static final String PROPERTY_CSS_CLASS = "cssClass";
+    public static final String PROPERTY_CUSTOM_CSS = "customCss";
     public static final String PROPERTY_FONT = "font";
     public static final String PROPERTY_FOREGROUND = "foreground";
     public static final String PROPERTY_LAYOUT_DATA = "layoutData";
@@ -661,6 +663,22 @@ public abstract class Component
         }
     }
 
+    /**
+     * Returns the css class name.
+     *
+     * @return the css class name
+     */
+    public String getCssClass() {
+        return (String) get(PROPERTY_CSS_CLASS);
+    }
+    /**
+     * Returns the custom css rules. (for pseudo classes)
+     *
+     * @return the custom css rules
+     */
+    public String getCustomCss() {
+        return (String) get(PROPERTY_CUSTOM_CSS);
+    }
     /**
      * Returns the local <code>EventListenerList</code>. The listener list is
      * lazily created; invoking this method will create the
@@ -1444,7 +1462,22 @@ public abstract class Component
             add(components[i]);
         }
     }
-
+    /**
+     * Sets the css class name. Note that this is used only for pseudo class
+     *
+     * @param newValue the new css class name
+     */
+    public void setCssClass(String newValue) {
+        set(PROPERTY_CSS_CLASS, newValue);
+    }
+    /**
+     * Sets the custom css rules. (for pseudo classes)
+     *
+     * @param newValue the custom css rules
+     */
+    public void setCustomCss(String newValue) {
+        set(PROPERTY_CUSTOM_CSS, newValue);
+    }
     /**
      * Sets the enabled state of the <code>Component</code>.
      *
