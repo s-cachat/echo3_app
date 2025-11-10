@@ -73,6 +73,7 @@ public abstract class TextComponent extends BorderedComponent {
     public static final String PROPERTY_TOOL_TIP_TEXT = "toolTipText";
     public static final String PROPERTY_VERTICAL_SCROLL = "verticalScroll";
     public static final String PROPERTY_WIDTH = "width";
+    public static final String PROPERTY_PLACEHOLDER = "placeholder";
     
     public static final String ACTION_LISTENERS_CHANGED_PROPERTY = "actionListeners";
     public static final String DOCUMENT_CHANGED_PROPERTY = "document";
@@ -266,6 +267,14 @@ public abstract class TextComponent extends BorderedComponent {
         return value == null ? -1 : value;
     }
 
+    /**
+     * Returns the placeholder.
+     *
+     * @return the placeholder
+     */
+    public String getPlaceholder() {
+        return (String) get(PROPERTY_PLACEHOLDER);
+    }
     /**
      * Returns the background color displayed when the text component is
      * read only.
@@ -564,6 +573,15 @@ public abstract class TextComponent extends BorderedComponent {
         } else {
             set(PROPERTY_MAXIMUM_LENGTH, newValue);
         }
+    }
+
+    /**
+     * Sets the placeholder.
+     *
+     * @param newValue the new <code>placeholder</code>
+     */
+    public void setPlaceholder(String newValue) {
+        set(PROPERTY_PLACEHOLDER, newValue);
     }
 
     /**

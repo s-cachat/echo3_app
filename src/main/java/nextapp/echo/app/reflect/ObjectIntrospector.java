@@ -190,7 +190,7 @@ public class ObjectIntrospector {
     public Class getPropertyClass(String propertyName) {
         PropertyDescriptor propertyDescriptor = getPropertyDescriptor(propertyName);
         if (propertyDescriptor == null) {
-            throw new IllegalArgumentException("Invalid property name: " + propertyName);
+            throw new IllegalArgumentException("Invalid property name: " + objectClass.getSimpleName()+"."+propertyName);
         }
         if (propertyDescriptor instanceof IndexedPropertyDescriptor) {
             return ((IndexedPropertyDescriptor) propertyDescriptor).getIndexedPropertyType();
