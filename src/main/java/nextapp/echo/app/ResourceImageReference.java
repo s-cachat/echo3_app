@@ -63,6 +63,7 @@ extends StreamImageReference {
         map.put("jpeg", "image/jpeg");
         map.put("jpg",  "image/jpg");
         map.put("bmp",  "image/bmp");
+        map.put("svg",  "image/svg+xml");
         extensionToContentType = Collections.unmodifiableMap(map);
     }
     
