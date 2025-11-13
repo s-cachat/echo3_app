@@ -210,13 +210,21 @@ public abstract class Component
      * Property change event name for visibility changes.
      */
     public static final String VISIBLE_CHANGED_PROPERTY = "visible";
-
+    /**
+     * Property change event name for background color.
+     */
     public static final String PROPERTY_BACKGROUND = "background";
-    public static final String PROPERTY_TRANSITION = "transition";
-    public static final String PROPERTY_CSS_CLASS = "cssClass";
-    public static final String PROPERTY_CUSTOM_CSS = "customCss";
+    /**
+     * Property change event name for font.
+     */
     public static final String PROPERTY_FONT = "font";
+    /**
+     * Property change event name for foreground color.
+     */
     public static final String PROPERTY_FOREGROUND = "foreground";
+    /**
+     * Property change event name for layout data changes.
+     */
     public static final String PROPERTY_LAYOUT_DATA = "layoutData";
 
     /**
