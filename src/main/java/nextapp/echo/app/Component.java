@@ -215,6 +215,22 @@ public abstract class Component
      */
     public static final String PROPERTY_BACKGROUND = "background";
     /**
+     * Property change event name for transition.
+     */
+    public static final String PROPERTY_TRANSITION = "transition";
+    /**
+     * Property change event name for text-transform.
+     */
+    public static final String PROPERTY_TEXT_TRANSFORM = "textTransform";
+    /**
+     * Property change event name for css class.
+     */
+    public static final String PROPERTY_CSS_CLASS = "cssClass";
+    /**
+     * Property change event name for custom css.
+     */
+    public static final String PROPERTY_CUSTOM_CSS = "customCss";
+    /**
      * Property change event name for font.
      */
     public static final String PROPERTY_FONT = "font";
@@ -672,6 +688,24 @@ public abstract class Component
     }
 
     /**
+     * Returns the css class name.
+     *
+     * @return the css class name
+     */
+    public String getCssClass() {
+        return (String) get(PROPERTY_CSS_CLASS);
+    }
+
+    /**
+     * Returns the custom css rules. (for pseudo classes)
+     *
+     * @return the custom css rules
+     */
+    public String getCustomCss() {
+        return (String) get(PROPERTY_CUSTOM_CSS);
+    }
+
+    /**
      * Returns the local <code>EventListenerList</code>. The listener list is
      * lazily created; invoking this method will create the
      * <code>EventListenerList</code> if required.
@@ -1009,6 +1043,24 @@ public abstract class Component
      */
     public final String getStyleName() {
         return styleName;
+    }
+
+    /**
+     * Returns the text-transform definition.
+     *
+     * @return the text-transform
+     */
+    public TextTransform getTextTransform() {
+        return TextTransform.fromValue((String) get(PROPERTY_TEXT_TRANSFORM));
+    }
+
+    /**
+     * Returns the transition definition.
+     *
+     * @return the transition
+     */
+    public Transition getTransition() {
+        return (Transition) get(PROPERTY_TRANSITION);
     }
 
     /**
@@ -1447,6 +1499,24 @@ public abstract class Component
     }
 
     /**
+     * Sets the css class name. Note that this is used only for pseudo class
+     *
+     * @param newValue the new css class name
+     */
+    public void setCssClass(String newValue) {
+        set(PROPERTY_CSS_CLASS, newValue);
+    }
+
+    /**
+     * Sets the custom css rules. (for pseudo classes)
+     *
+     * @param newValue the custom css rules
+     */
+    public void setCustomCss(String newValue) {
+        set(PROPERTY_CUSTOM_CSS, newValue);
+    }
+
+    /**
      * Sets the enabled state of the <code>Component</code>.
      *
      * @param newValue the new state
@@ -1632,6 +1702,24 @@ public abstract class Component
         String oldValue = styleName;
         styleName = newValue;
         firePropertyChange(STYLE_NAME_CHANGED_PROPERTY, oldValue, newValue);
+    }
+
+    /**
+     * Sets the text-transform of this component.
+     *
+     * @param newValue the new text-transform
+     */
+    public void setTextTransform(TextTransform newValue) {
+        set(PROPERTY_TRANSITION, newValue == null ? null : newValue.getValue());
+    }
+
+    /**
+     * Sets the transition of this component.
+     *
+     * @param newValue the new transition
+     */
+    public void setTransition(Transition newValue) {
+        set(PROPERTY_TRANSITION, newValue);
     }
 
     /**
